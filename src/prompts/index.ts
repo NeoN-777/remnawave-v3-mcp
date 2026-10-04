@@ -19,8 +19,9 @@ export function registerAllPrompts(server: McpServer) {
 1. First, check if the username is already taken using users_get_by_username
 2. Get the list of available config profiles using config_profiles_list
 3. Get the list of available internal squads using squads_list
-4. Create the user with appropriate settings (ask me about traffic limit, expiration date, and which squads to assign)
-5. Confirm the user was created successfully and show the subscription URL`,
+4. Ask me about traffic limit, expiration date, and which squads to assign
+5. Create the user with users_create (expireAt in ISO 8601)
+6. Confirm the user was created successfully and show the subscription URL`,
                     },
                 },
             ],
@@ -44,7 +45,7 @@ export function registerAllPrompts(server: McpServer) {
 1. Get node details using nodes_get
 2. Check system health using system_health
 3. Get node metrics using system_nodes_metrics
-4. Check bandwidth stats using system_bandwidth_stats
+4. Check node traffic using bandwidth_node_users_usage for the last 7 days
 5. Summarize the node's status: connection state, xray version, uptime, traffic usage, online users
 6. Flag any issues found (offline, high traffic usage, errors)`,
                     },
@@ -79,9 +80,9 @@ export function registerAllPrompts(server: McpServer) {
                             text: `Generate a traffic report for the ${period} period:
 
 1. Get overall system stats using system_stats
-2. Get bandwidth statistics using system_bandwidth_stats
+2. Get bandwidth statistics using system_bandwidth_stats and per-node usage using bandwidth_nodes_usage
 3. Get node statistics using system_nodes_statistics
-4. List all users and their traffic using users_list
+4. List users sorted by traffic using users_list (sorting by usedTrafficBytes desc)
 5. Provide a summary including:
    - Total traffic consumed
    - Per-node traffic breakdown
@@ -99,20 +100,21 @@ export function registerAllPrompts(server: McpServer) {
         'user_audit',
         'Complete audit of a specific user',
         {
-            uuid: z.string().describe('User UUID to audit'),
+            user: z.string().describe('Username, short UUID or numeric user ID'),
         },
-        async ({ uuid }) => ({
+        async ({ user }) => ({
             messages: [
                 {
                     role: 'user' as const,
                     content: {
                         type: 'text' as const,
-                        text: `Perform a complete audit of user ${uuid}:
+                        text: `Perform a complete audit of user "${user}":
 
-1. Get full user details using users_get
-2. Get subscription info using subscriptions_get_by_uuid
+1. Resolve the user to a numeric ID using users_resolve (by id, username or shortUuid), then get full details using users_get
+2. Get subscription info using subscriptions_get_by_id
 3. Get HWID devices using hwid_devices_list
-4. Summarize:
+4. Get traffic history for the last 30 days using bandwidth_user_usage
+5. Summarize:
    - Account status and expiration
    - Traffic usage vs limit
    - Subscription URL and last access
@@ -137,7 +139,7 @@ export function registerAllPrompts(server: McpServer) {
                         type: 'text' as const,
                         text: `Help me clean up users:
 
-1. List all users using users_list with a large page size
+1. List users using users_list (filter by status where possible, paginate with start/size)
 2. Identify:
    - Users with EXPIRED status
    - Users with DISABLED status
@@ -145,7 +147,7 @@ export function registerAllPrompts(server: McpServer) {
    - Users who haven't connected recently
 3. Present the findings in a clear table
 4. Ask what action to take (disable, delete, extend, reset traffic)
-5. Execute the chosen action after confirmation`,
+5. Execute the chosen action after confirmation using bulk tools (users_bulk_*, which take numeric userIds)`,
                     },
                 },
             ],
