@@ -1,6 +1,10 @@
-# mcp-remnawave
+# remnawave-v3-mcp
 
 [English](#english) | [Русский](#русский)
+
+> Fork of [TrackLine/mcp-remnawave](https://github.com/TrackLine/mcp-remnawave) with support for **Remnawave v3** (API 3.x). For Remnawave 2.x panels use the original repository.
+>
+> Форк [TrackLine/mcp-remnawave](https://github.com/TrackLine/mcp-remnawave) с поддержкой **Remnawave v3** (API 3.x). Для панелей Remnawave 2.x используйте оригинальный репозиторий.
 
 ---
 
@@ -31,8 +35,8 @@ MCP server ([Model Context Protocol](https://modelcontextprotocol.io)) providing
 ### Installation
 
 ```bash
-git clone https://github.com/TrackLine/mcp-remnawave.git
-cd mcp-remnawave
+git clone https://github.com/NeoN-777/remnawave-v3-mcp.git
+cd remnawave-v3-mcp
 npm install
 npm run build
 ```
@@ -539,8 +543,8 @@ MCP-сервер ([Model Context Protocol](https://modelcontextprotocol.io)), п
 ### Установка
 
 ```bash
-git clone https://github.com/TrackLine/mcp-remnawave.git
-cd mcp-remnawave
+git clone https://github.com/NeoN-777/remnawave-v3-mcp.git
+cd remnawave-v3-mcp
 npm install
 npm run build
 ```
